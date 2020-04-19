@@ -1,6 +1,16 @@
 import React, { useState } from 'react';
+import { client, Lookup } from "../smartystreets";
 
 const Dashboard = (props) => {
+  // hard coding stuff for now...
+
+  /**
+   * @TODO Add autocomplete to first input field.
+   * Debounce API call so it submits a lookup request after user stops typing
+   * Display up to five responses
+   * Once chosen, take selected result contents and update state of other input fields
+   * On Submit, send full address to back end API to process full address verification using SmartyStreets API
+   */
   const [address, setAddress] = useState({
     street1: '',
     street2: '',
