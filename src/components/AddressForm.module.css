@@ -1,0 +1,7 @@
+.result {
+  border: solid 1px #222;
+}
+.activeResult, .result:hover {
+  background-color: #ddd;
+  cursor: pointer;
+}

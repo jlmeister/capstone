@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { client, Lookup } from "../smartystreets";
+import { Button } from "@material-ui/core";
 
 const Dashboard = (props) => {
-  // hard coding stuff for now...
-
   /**
    * @TODO Add autocomplete to first input field.
    * Debounce API call so it submits a lookup request after user stops typing
@@ -16,16 +15,14 @@ const Dashboard = (props) => {
   const [city, setCity] = useState('')
   const [state, setState] = useState('')
   const [results, setResults] = useState([])
+  const [shouldSearch, setShouldSearch] = useState(false)
 
   useEffect(() => {
     const debouncedSearch = setTimeout(() => {
-      console.log(results)
+      // if (shouldSearch === false) return;
       if (street1.length >= 3) {
         client.send(new Lookup(street1))
-          .then(response => {
-            console.log(response)
-            setResults([...response.result])
-          })
+          .then(response => setResults([...response.result]))
           .catch(err => console.log(err))
       }
       else
@@ -48,22 +45,31 @@ const Dashboard = (props) => {
     <div style={{ width: '300px', margin: '150px auto' }}>
       <form onSubmit={handleSubmit}>
         <label>street 1</label>
-        <input label='street 1' onChange={e => setStreet1(e.target.value)} /> <br />
+        <input label='street 1' value={street1} onChange={e => setStreet1(e.target.value)} /> <br />
         {
           results.length > 0 && (
             <div style={{ width: '100%' }}>
               {results.map((result, index) => {
-                return <p key={index}>{result.text}</p>
+                const setAddress = () => {
+                  setStreet1(result.streetLine)
+                  setCity(result.city)
+                  setState(result.state)
+                }
+                return (
+                  <Button variant='text' key={index} onClick={setAddress}>
+                    <p>{result.text}</p>
+                  </Button>
+                )
               })}
             </div>
           )
         }
         <label>street 2</label>
-        <input label='street 2' onChange={e => setStreet2(e.target.value)} /> <br />
+        <input label='street 2' value={street2} onChange={e => setStreet2(e.target.value)} /> <br />
         <label>city</label>
-        <input label='city' onChange={e => setCity(e.target.value)} /> <br />
+        <input label='city' value={city} onChange={e => setCity(e.target.value)} /> <br />
         <label>state</label>
-        <input label='state' onChange={e => setState(e.target.value)} /> <br />
+        <input label='state' value={state} onChange={e => setState(e.target.value)} /> <br />
         <button>submit</button>
       </form>
     </div>

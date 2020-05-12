@@ -12,12 +12,16 @@ const Login = ({ history }) => {
     history.push('/')
   }
 
+  // on submit, send a POST request to Express API for authentication
+  // on successful response, redirect to Dashboard
+  // on unsuccessful response, tell user to try again.
+
   return (
     checkAuth() ? (
       <Redirect to='/' />
     ) : (
-    <form onSubmit={e => handleSubmit(e)}>
-      <TextField
+    <form onSubmit={handleSubmit}>
+      <TextField    
         type='text'
         onChange={e => setUsername(e.target.value)}
         value={username} />
