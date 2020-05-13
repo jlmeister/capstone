@@ -1,10 +1,10 @@
 import React from 'react';
-import AddressForm from "./AddressForm";
+import AddressServiceElement from "./AddressServiceElement";
 
 const About = (props) => {
   return (
     <div>
-      <AddressForm/>
+      <AddressServiceElement/>
     </div>
   )
 }

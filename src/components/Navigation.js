@@ -14,10 +14,9 @@ const Navigation = () => {
     <AppBar position='relative'>
       <Toolbar>
         <Typography variant='h6' style={{ flexGrow: 1 }}>
-          I don't know the name of this app yet
+          AddressIt
         </Typography>
         <Button component={Link} to='/about' color='inherit'>About</Button>
-        <Button component={Link} to='/companies' color='inherit'>Companies</Button>
         <Button component={Link} to='/dashboard' color='inherit'>Dashboard</Button>
         {
           checkAuth() ? (
