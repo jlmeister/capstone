@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { client, Lookup } from "../smartystreets";
 import axios from "axios";
 import { Button, TextField, ListItem, List } from "@material-ui/core";
+import { pathName } from "../pathname";
 
 const AddressLookup = ({ goToDashboard, submitForConfirmation }) => {
   const [street1, setStreet1] = useState('')
@@ -29,7 +30,7 @@ const AddressLookup = ({ goToDashboard, submitForConfirmation }) => {
     e.preventDefault()
     axios({
       method: 'POST',
-      url: 'http://localhost/api/addresses/verify',
+      url: `${pathName}/api/addresses/verify`,
       headers: {
         'content-type': 'application/json'
       },

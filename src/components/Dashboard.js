@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import AddressServiceElement from './AddressServiceElement'
 import { Button } from "@material-ui/core";
+import { pathName } from "../pathname";
 
 /**
  * @DELETE_EVERYTHING
@@ -27,7 +28,7 @@ const AddressList = ({ setAddressID, loadEditForm, loadAddForm }) => {
   const [addresses, setAddresses] = useState([])
   const userID = JSON.parse(sessionStorage.getItem('user')).id
   const fetchAddresses = () => {
-    axios.get(`http://localhost/api/addresses/${userID}`)
+    axios.get(`${pathName}/api/addresses/${userID}`)
       .then(res => res.data)
       .then(list => setAddresses(list))
       .catch(err => console.log(err))
@@ -38,7 +39,7 @@ const AddressList = ({ setAddressID, loadEditForm, loadAddForm }) => {
   const handleDelete = (addressID) => {
     axios({
       method: 'DELETE',
-      url: 'http://localhost/api/addresses',
+      url: `${pathName}/api/addresses`,
       headers: {
         'content-type': 'application/json'
       },

@@ -1,6 +1,7 @@
 import React from 'react'
 import axios from 'axios'
 import { Button, Typography } from "@material-ui/core";
+import { pathName } from "../pathname";
 
 const AddressConfirmation = ({ address, goBack, apiEndpoint, goToDashboard, addressID }) => {
   const userID = JSON.parse(sessionStorage.getItem('user')).id
@@ -8,7 +9,7 @@ const AddressConfirmation = ({ address, goBack, apiEndpoint, goToDashboard, addr
   const handleConfirm = () => {
     axios({
       method: 'POST',
-      url: `http://localhost/api/addresses/${apiEndpoint}`,
+      url: `${pathName}/api/addresses/${apiEndpoint}`,
       headers: {
         'content-type': 'application/json'
       },

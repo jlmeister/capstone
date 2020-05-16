@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Button, TextField } from "@material-ui/core";
+import { Button, TextField, Typography } from "@material-ui/core";
 import { checkAuth } from '../auth';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Link } from 'react-router-dom';
 import axios from 'axios'
+import { pathName } from "../pathname";
 
 // on successful response, redirect to Dashboard
 // on unsuccessful response, tell user to try again.
@@ -14,7 +15,7 @@ const Login = ({ history }) => {
     e.preventDefault()
     axios({
       method: 'POST',
-      url: 'http://localhost/api/user/login',
+      url: `${pathName}/api/user/login`,
       headers: { 'content-type': 'application/json' },
       data: {
         email: email,
@@ -33,28 +34,32 @@ const Login = ({ history }) => {
     checkAuth() ? (
       <Redirect to='/dashboard' />
     ) : (
-    <form onSubmit={handleSubmit} style={{ width: '350px', margin: '150px auto' }}>
-      <TextField    
-        type='email'
-        label='email'
-        required
-        fullWidth
-        onChange={e => setEmail(e.target.value)}
-        value={email}
-      />
-      <br/>
-      <TextField
-        type='password'
-        label='password'
-        required
-        fullWidth
-        style={{ marginBottom: '1.5rem' }}
-        onChange={e => setPassword(e.target.value)}
-        value={password}
-      />
-      <br/>
-      <Button variant='contained' color='primary' fullWidth type='submit'>Submit</Button>
-    </form>
+      <form onSubmit={handleSubmit} style={{ width: '350px', margin: '150px auto' }}>
+        <Typography component='h1' variant='h5' align='center'>Log In</Typography>
+        <TextField    
+          type='email'
+          label='email'
+          required
+          fullWidth
+          onChange={e => setEmail(e.target.value)}
+          value={email}
+        />
+        <br/>
+        <TextField
+          type='password'
+          label='password'
+          required
+          fullWidth
+          style={{ marginBottom: '1.5rem' }}
+          onChange={e => setPassword(e.target.value)}
+          value={password}
+        />
+        <br/>
+        <Button variant='contained' color='primary' fullWidth type='submit'>Submit</Button>
+        <Link to='/register' style={{textAlign:'center'}}><p>
+          or create an account
+        </p></Link>
+      </form>
     )
   )
 }
