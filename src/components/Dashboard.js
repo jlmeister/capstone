@@ -1,101 +1,93 @@
 import React, { useState, useEffect } from 'react';
-import { client, Lookup } from "../smartystreets";
 import axios from "axios";
+import AddressServiceElement from './AddressServiceElement'
+import { Button } from "@material-ui/core";
 
-const AddressLookup = ({ submitForConfirmation }) => {
-  const [street1, setStreet1] = useState('')
-  const [street2, setStreet2] = useState('')
-  const [city, setCity] = useState('')
-  const [state, setState] = useState('')
-  const [results, setResults] = useState([])
-  const [shouldSearch, setShouldSearch] = useState(false)
+/**
+ * @DELETE_EVERYTHING
+ * MAKE A REAL DASHBOARD COMPONENT
+ * 
+ * on page load, go get the addresses and store them in a state variable. (GET /api/addresses) => [addresses, setAddresses]
+ * keep track of various modes: view, create, edit
+ * @VIEW
+ * show all the addresses for the user, each with an edit button and delete button.
+ * show an ADD button below them.
+ * Edit button toggles edit mode
+ * 
+ * @EDIT
+ * show the address form with method set to 'update'
+ * on successful edit, change mode to 'view'
+ * 
+ * @CREATE
+ * show the address form with method set to 'add'
+ * on successful add, change mode to 'view'
+ */
 
-  useEffect(() => {
-    const debouncedSearch = setTimeout(() => {
-      if (shouldSearch === false) return;
-      if (street1.length >= 3) {
-        client.send(new Lookup(street1))
-          .then(response => setResults([...response.result]))
-          .catch(err => console.log(err))
-      }
-      else
-        setResults([])
-    }, 200)
-    return () => clearTimeout(debouncedSearch)
-  }, [street1, shouldSearch])
+const AddressList = ({ setAddressID, loadEditForm, loadAddForm }) => {
+  const [addresses, setAddresses] = useState([])
+  const userID = JSON.parse(sessionStorage.getItem('user')).id
+  const fetchAddresses = () => {
+    axios.get(`http://localhost/api/addresses/${userID}`)
+      .then(res => res.data)
+      .then(list => setAddresses(list))
+      .catch(err => console.log(err))
+  }
 
-  const handleSubmit = e => {
-    e.preventDefault()
+  useEffect(fetchAddresses, [])
+
+  const handleDelete = (addressID) => {
     axios({
-      method: 'POST',
-      url: 'http://localhost:4000/api/address/verify',
+      method: 'DELETE',
+      url: 'http://localhost/api/addresses',
       headers: {
         'content-type': 'application/json'
       },
       data: {
-        street: street1,
-        secondary: street2,
-        lastLine: `${city} ${state}`
+        addressID: addressID,
+        userID: userID
       }
     })
-      .then(res => res.data.lookups.map(lookup => lookup.result[0]))
-      .then(address => {
-        if (address.length > 0) {
-          console.log('address ', address[0])
-          submitForConfirmation(address[0])
-        }
-        else
-          console.log('invalid address')
-      })
-      .catch(err => console.log(err))
-  }
-  const handleAutoComplete = e => {
-    setStreet1(e.target.value)
-    setShouldSearch(true)
+      .then(res => fetchAddresses())
+    .catch(err => console.log(err))
   }
 
   return (
-    <div style={{ width: '300px', margin: '150px auto' }}>
-      <form onSubmit={handleSubmit}>
-        <label>street 1
-          <input required
-            value={street1}
-            onChange={handleAutoComplete} />
-          <br />
-        </label>
+    <div style={{ padding: '2rem' }}>
+      <h1>Your Addresses</h1>
+      <Button variant='contained' color='primary' onClick={loadAddForm}>Add</Button>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))' }}>
         {
-          results.length > 0 && (
-            <ul style={{ width: '100%' }}>
-              {results.map((result, index) => {
-                const setAddress = () => {
-                  setStreet1(result.streetLine)
-                  setCity(result.city)
-                  setState(result.state)
-                  setShouldSearch(false)
-                  setResults([])
-                }
-                return (
-                  <li key={index} onClick={setAddress}>
-                    {result.text}
-                  </li>
-                )
-              })}
-            </ul>
-          )
+          addresses.map(address => {
+            return (
+              <div key={address.id}>
+                <h2>#{address.id}</h2>
+                <p>{address.delivery_line}</p>
+                <p>{address.last_line}</p>
+                <Button variant='outlined' color='primary' style={{ margin: '0 20px 0 0' }} onClick={() => { setAddressID(address.id); loadEditForm()} }>Edit</Button>
+                <Button variant='outlined' color='secondary' onClick={() => handleDelete(address.id)}>Delete</Button>
+              </div>
+            )
+          })
         }
-        <label>Apt/Suite
-          <input value={street2} onChange={e => setStreet2(e.target.value)} /> <br />
-        </label>
-        <label>city
-          <input required value={city} onChange={e => setCity(e.target.value)} /> <br />
-        </label>
-        <label>state
-          <input required value={state} onChange={e => setState(e.target.value)} /> <br />
-        </label>
-        <button>submit</button>
-      </form>
+      </div>
     </div>
   )
 }
 
-export default AddressLookup
+const Dashboard = (props) => {
+  const [mode, setMode] = useState('view')
+  const [selectedAddress, setSelectedAddress] = useState(null)
+
+  return (
+    <div>
+      {
+        mode === 'view' ?
+          <AddressList setAddressID={setSelectedAddress} loadEditForm={() => setMode('update')} loadAddForm={() => setMode('add')} />
+          :
+          <AddressServiceElement addressID={selectedAddress} apiEndpoint={mode} goToDashboard={() => setMode('view')} />
+      }
+    </div>
+  )
+}
+
+export default Dashboard
